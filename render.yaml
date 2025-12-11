@@ -1,6 +1,6 @@
 services:
 - type: web
-  name: flask-ai-grader
+  name: flask-skindisease detector
   env: python
   buildCommand: "pip install -r requirements.txt"
   startCommand: "gunicorn --bind 0.0.0.0:$PORT api.app:app"
@@ -9,3 +9,4 @@ services:
     sync: false
   - key: FLASK_SECRET_KEY
     sync: false
+
