@@ -1,7 +1,10 @@
 Flask
-torch
-torchvision
 numpy
 Pillow
-gunicorn # Used by Render for production web serving
-# Add any other libraries your app imports (e.g., opencv-python if used)
+# TensorFlow is the core ML library for model loading and prediction
+tensorflow==2.10.0 
+# OpenCV is used for all image operations (Grad-CAM, RGB layers, resizing)
+# We must use 'headless' for server environments without a graphical display.
+opencv-python-headless==4.7.0.72
+# Gunicorn is the production server required by Render to run your Flask application
+gunicorn
