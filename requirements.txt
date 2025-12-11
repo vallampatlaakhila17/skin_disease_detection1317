@@ -1,17 +1,13 @@
 Flask
-# Core mathematical and array manipulation library, used by all scripts
 numpy
-# Used for image file handling (PIL.Image)
 Pillow
-# Used for reading the HAM10000_metadata.csv file
 pandas
-# Used for data splitting (train_test_split) and class weighting (compute_class_weight)
 scikit-learn
-# Deep learning framework, essential for model creation, loading, and prediction
-tensorflow==2.10.1 
-# OpenCV is used for image manipulation, Grad-CAM, and RGB visualization in app/app.py
-# 'headless' version is crucial for non-GUI server environments like Render
-opencv-python-headless==4.7.0.72
-# Gunicorn is the required production-ready WSGI server for your Flask application on Render
-gunicorn
+# This version (2.15.0) is compatible with Python 3.11
+tensorflow==2.15.0 
 
+# This OpenCV version is compatible with Python 3.11
+opencv-python-headless==4.9.0.80
+
+# Gunicorn is required for the web app deployment
+gunicorn
