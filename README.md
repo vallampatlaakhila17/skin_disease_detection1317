@@ -1,4 +1,7 @@
-# Skin Disease Classifier and Visualization (pottulu)
+# AUTOMATED SKIN DISEASE DETECTION WITH CNNS AND ATTENTION MECHANISMS
+
+<img width="1615" height="81" alt="image" src="https://github.com/user-attachments/assets/76d5b276-ee25-4d5b-8ff5-2e762d275789" />
+ (pottulu)
 
 ## 🌟 Project Overview
 
