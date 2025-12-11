@@ -1,8 +1,4 @@
-# AUTOMATED SKIN DISEASE DETECTION WITH CNNS AND ATTENTION MECHANISMS
-
-<img width="1615" height="81" alt="image" src="https://github.com/user-attachments/assets/76d5b276-ee25-4d5b-8ff5-2e762d275789" />
- (pottulu)
-
+# AUTOMATED SKIN DISEASE DETECTION WITH CNN AND ATTENTION MECHANISMS
 ## 🌟 Project Overview
 
 This is a full-stack deep learning web application designed for classifying seven common types of skin lesions (e.g., Melanoma, Basal Cell Carcinoma). The application uses a custom Convolutional Neural Network (CNN) built with TensorFlow/Keras and focuses on **Explainable AI (XAI)** by providing visual proof for its predictions.
