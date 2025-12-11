@@ -1,0 +1,7 @@
+Flask
+torch
+torchvision
+numpy
+Pillow
+gunicorn # Used by Render for production web serving
+# Add any other libraries your app imports (e.g., opencv-python if used)
