@@ -4,10 +4,11 @@ Pillow
 pandas
 scikit-learn
 # This version (2.15.0) is compatible with Python 3.11
-tensorflow==2.15.0 
+tensorflow==2.10.1
 
 # This OpenCV version is compatible with Python 3.11
 opencv-python-headless==4.9.0.80
 
 # Gunicorn is required for the web app deployment
 gunicorn
+
