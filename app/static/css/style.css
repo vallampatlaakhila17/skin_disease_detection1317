@@ -1,0 +1,379 @@
+/* app/static/css/style.css - FINAL VERSION */
+
+/* --- Configuration Variables --- */
+:root {
+    --color-primary: #00bcd4; /* Cyan/Teal for main accents */
+    --color-secondary: #ff4081; /* Pink for minor accents/headings */
+    --color-background-dark: #121212;
+    --color-surface-dark: #1e1e1e; 
+    --color-text-light: #e0e0e0;
+    --color-divider: #333333;
+    --color-success: #4CAF50;
+}
+
+/* --- 1. Global & Body Styles --- */
+body {
+    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--color-background-dark);
+    color: var(--color-text-light);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+.container {
+    background-color: var(--color-surface-dark);
+    width: 90%;
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 40px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5); 
+    border-radius: 16px;
+    border: 1px solid #282828; 
+}
+
+h1 {
+    color: var(--color-primary);
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 700;
+    font-size: 2.5em;
+    letter-spacing: 1.5px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid var(--color-primary);
+}
+
+h2 {
+    color: var(--color-text-light);
+    border-bottom: 1px solid var(--color-divider);
+    padding-bottom: 10px;
+    margin-top: 30px;
+    margin-bottom: 25px;
+    font-weight: 500;
+}
+
+/* --- 2. Tab Control Styles --- */
+.tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid var(--color-divider);
+}
+
+.tab-button {
+    background-color: transparent;
+    border: none;
+    color: var(--color-text-light);
+    cursor: pointer;
+    padding: 12px 20px;
+    transition: 0.3s;
+    font-size: 1.1em;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 6px 6px 0 0;
+}
+
+.tab-button:hover {
+    background-color: #282828;
+}
+
+.tab-button.active {
+    color: var(--color-primary);
+    border-bottom: 3px solid var(--color-primary);
+    background-color: var(--color-surface-dark);
+}
+
+.tab-content {
+    display: none; 
+    flex-direction: column; 
+    align-items: center;
+    padding: 30px 0;
+}
+
+/* --- Camera/Video/Canvas Styles --- */
+#camera {
+    border: 2px dashed #007788; 
+    border-radius: 12px;
+    padding: 30px;
+}
+
+#video-display-area {
+    position: relative;
+    max-width: 450px;
+    width: 100%;
+    margin-bottom: 15px;
+    border: 3px solid var(--color-primary);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#video, #canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 350px;
+    object-fit: cover;
+}
+#canvas {
+    display: none;
+}
+
+/* Style for the camera-off state */
+#camera-off-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 350px; 
+    color: #777;
+    background-color: #1a1a1a;
+    width: 100%;
+    border-radius: 8px;
+}
+
+#camera-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+/* --- Action Button Styles --- */
+.action-button {
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 700;
+    transition: background-color 0.3s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#snap-button {
+    background-color: #ffc107; 
+    color: black;
+    box-shadow: 0 4px 10px rgba(255, 193, 7, 0.4);
+}
+#snap-button:hover:not(:disabled) {
+    background-color: #e0a800;
+    transform: translateY(-1px);
+}
+#snap-button:disabled {
+    background-color: #444;
+    color: #999;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+#analyze-button, .upload-button, #start-camera-button {
+    background-color: var(--color-primary);
+    color: var(--color-background-dark);
+    box-shadow: 0 4px 10px rgba(0, 188, 212, 0.4);
+}
+#analyze-button:hover, .upload-button:hover, #start-camera-button:hover {
+    background-color: #0097a7;
+    transform: translateY(-1px);
+}
+
+#retake-button {
+    background-color: #f44336; 
+    color: var(--color-text-light);
+}
+#retake-button:hover {
+    background-color: #d32f2f;
+}
+
+/* --- 4. File Upload Styles --- */
+#upload {
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #252525;
+    border-radius: 12px;
+}
+
+#upload-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px; 
+    width: 100%;
+}
+
+.file-upload-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.custom-file-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px;
+    border: 3px dashed var(--color-secondary);
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #333;
+    width: 80%;
+    font-weight: 500;
+    font-size: 1.1em;
+    transition: background-color 0.3s;
+}
+
+.custom-file-label:hover {
+    background-color: #444;
+}
+
+#file-input {
+    display: none; 
+}
+
+#file-name-display {
+    color: var(--color-text-light);
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.upload-button {
+    width: 80%;
+}
+
+/* --- 5. Result Box & Visualizations (General) --- */
+.result-box {
+    border: 1px solid #282828;
+    padding: 30px;
+    border-radius: 16px;
+    background-color: #222222; 
+    margin-top: 40px;
+}
+
+.prediction-details {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 30px;
+    align-items: flex-start;
+    flex-wrap: wrap; 
+}
+
+.prediction-text {
+    flex: 1;
+    min-width: 250px;
+}
+
+.diagnosis-name {
+    font-size: 1.5em;
+    color: var(--color-secondary);
+    margin-bottom: 10px;
+}
+
+.confidence-score {
+    font-size: 1.1em;
+    color: var(--color-text-light);
+}
+
+.gradcam-explanation {
+    flex: 1;
+    min-width: 200px;
+    text-align: center;
+}
+
+/* New style for the Grad-CAM header */
+.gradcam-explanation p {
+    color: var(--color-primary);
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.gradcam-img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid var(--color-divider);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.explanation-note {
+    font-size: 0.9em;
+    color: #999;
+    margin-top: 5px;
+}
+
+
+/* --- 6. Disease Info Section Styling (FIXED LOOK) --- */
+
+.disease-info-section h3 {
+    color: var(--color-secondary);
+    border-bottom: 2px solid var(--color-divider);
+    padding-bottom: 10px;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+}
+
+.info-block {
+    background-color: #252525; 
+    padding: 15px;
+    border-left: 5px solid var(--color-primary); 
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
+}
+
+.info-block:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.info-block h4 {
+    color: var(--color-primary);
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-weight: 700;
+    font-size: 1.15em;
+    text-transform: uppercase;
+}
+
+.info-block p {
+    color: var(--color-text-light);
+    margin: 0;
+    line-height: 1.6;
+}
+
+.disclaimer {
+    background-color: #4d0000; 
+    border: 1px solid #ff4d4d;
+    padding: 15px;
+    margin-top: 30px;
+    border-radius: 8px;
+    color: #ffdada;
+    font-size: 0.9em;
+}
+
+.disclaimer strong {
+    color: #ffc2c2;
+}
+
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+    .prediction-details {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

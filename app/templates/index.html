@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Skin Disease Classifier</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script> 
+</head>
+<body>
+    <div class="container">
+        <h1>Skin Lesion Classifier</h1>
+
+        <div class="tabs">
+            <button class="tab-button active" id="camera-tab" onclick="openTab(event, 'camera')">
+                <span class="material-symbols-outlined">videocam</span> Live Scan
+            </button>
+            <button class="tab-button" onclick="openTab(event, 'upload')">
+                <span class="material-symbols-outlined">upload_file</span> Choose File
+            </button>
+        </div>
+
+        <div id="camera" class="tab-content active">
+            <h3 style="text-align:center; color: var(--color-primary);">Live Skin Lesion Scan</h3>
+            
+            <div id="video-display-area">
+                <video id="video" width="100%" height="auto" autoplay style="display:none;"></video>
+                <canvas id="canvas"></canvas>
+                <div id="camera-off-placeholder" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 350px; color: #777;">
+                    <span class="material-symbols-outlined" style="font-size: 80px;">camera_off</span>
+                    <p>Camera is currently off. Press 'Start Camera' below.</p>
+                </div>
+            </div>
+
+            <div id="camera-buttons">
+                <button id="start-camera-button" class="action-button">
+                    <span class="material-symbols-outlined">videocam</span>
+                    Start Camera
+                </button>
+                
+                <button id="snap-button" class="action-button" disabled style="display:none;">
+                    <span class="material-symbols-outlined">camera</span>
+                    Snap Photo
+                </button>
+                
+                <button id="analyze-button" class="action-button" style="display:none;">
+                    <span class="material-symbols-outlined">search</span>
+                    Analyze
+                </button>
+
+                <button id="retake-button" class="action-button" style="display:none;">
+                    <span class="material-symbols-outlined">restart_alt</span>
+                    Retake
+                </button>
+            </div>
+        </div>
+
+        <div id="upload" class="tab-content">
+            <h3 style="text-align:center; color: var(--color-primary);">Upload Image File</h3>
+            <form id="upload-form" method="POST" enctype="multipart/form-data">
+                <div class="file-upload-wrapper">
+                    <label for="file-input" class="custom-file-label">
+                        <span class="material-symbols-outlined">folder_open</span>
+                        <span id="file-name-display">No file chosen</span>
+                    </label>
+                    <input type="file" name="file" id="file-input" accept="image/*" required onchange="displayFileName(this)">
+                </div>
+                
+                <button type="submit" class="action-button upload-button">
+                    <span class="material-symbols-outlined">upload</span>
+                    Upload and Analyze
+                </button>
+            </form>
+            <p style="text-align: center; margin-top: 15px; color: #aaa;">Accepted formats: JPG, PNG. Max size: 5MB.</p>
+        </div>
+
+
+        {% if result %}
+        <div class="result-box">
+            <h2>Diagnosis Result</h2>
+            
+            <div class="prediction-details">
+                <div class="prediction-text">
+                    <p class="diagnosis-name">
+                        Diagnosis: <strong>{{ result.diagnosis_name }}</strong>
+                    </p>
+                    <p class="confidence-score">
+                        Confidence: <strong>{{ result.confidence }}</strong>
+                    </p>
+                </div>
+                
+                <div class="gradcam-explanation">
+                    <p style="font-size: 1.1em; font-weight: bold; color: var(--color-primary); margin-bottom: 5px;">Model Attention (Grad-CAM)</p> 
+                    
+                    <img src="{{ result.gradcam_url }}" alt="GradCAM Heatmap" class="gradcam-img"> 
+                    
+                    <p class="explanation-note">
+                        <small>*Heatmap shows the area the model focused on (Yellow/Red = High Attention).</small>
+                    </p>
+                </div>
+            </div>
+
+            <div class="channel-visualization-container" style="width:100%; margin-top: 30px;">
+                <h3>Channel Importance Visualization</h3>
+                <p class="explanation-note">The bar chart shows which feature map channels the model prioritized (higher bar = higher weight/importance).</p>
+                <div style="background-color: #252525; padding: 15px; border-radius: 8px;">
+                    <canvas id="channelAttentionChart"></canvas>
+                </div>
+            </div>
+
+            <div class="rgb-layers-container" style="width:100%; margin-top: 40px;">
+                <h3>RGB Color Layer Visualization</h3>
+                <p class="explanation-note">Shows the intensity of Red, Green, and Blue channels—critical for analyzing pigmentation and blood flow (vascularity).</p>
+                <div class="rgb-images-flex" style="display: flex; justify-content: space-around; gap: 15px; flex-wrap: wrap;">
+                    
+                    <div style="text-align: center; flex: 1 1 30%;">
+                        <p style="color: #ff4081; font-weight: bold;">Red Layer</p>
+                        <img src="{{ result.rgb_layers[0] }}" alt="Red Channel" style="max-width: 100%; height: auto; border: 2px solid #ff4081; border-radius: 6px;">
+                    </div>
+                    
+                    <div style="text-align: center; flex: 1 1 30%;">
+                        <p style="color: #0097a7; font-weight: bold;">Green Layer</p>
+                        <img src="{{ result.rgb_layers[1] }}" alt="Green Channel" style="max-width: 100%; height: auto; border: 2px solid #0097a7; border-radius: 6px;">
+                    </div>
+                    
+                    <div style="text-align: center; flex: 1 1 30%;">
+                        <p style="color: #00bcd4; font-weight: bold;">Blue Layer</p>
+                        <img src="{{ result.rgb_layers[2] }}" alt="Blue Channel" style="max-width: 100%; height: auto; border: 2px solid #00bcd4; border-radius: 6px;">
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="disease-info-section">
+                <h3>Disease Information: {{ result.diagnosis_name }}</h3>
+                <div class="info-block"><h4>Description</h4><p>{{ result.info.desc }}</p></div>
+                <div class="info-block"><h4>Prevention</h4><p>{{ result.info.prev }}</p></div>
+                <div class="info-block"><h4>Medication/Treatment</h4><p>{{ result.info.treat }}</p></div>
+                <div class="disclaimer">
+                    <p><strong>⚠️ Disclaimer:</strong> This tool provides a **deep learning-based risk assessment** and is **NOT a substitute for a professional medical diagnosis**. If you have concerns about a skin lesion, please consult a qualified healthcare professional (Dermatologist) immediately.</p>
+                </div>
+            </div>
+
+        </div>
+        {% endif %}
+
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const snapButton = document.getElementById('snap-button');
+        const analyzeButton = document.getElementById('analyze-button');
+        const retakeButton = document.getElementById('retake-button');
+        const startCameraButton = document.getElementById('start-camera-button');
+        const cameraOffPlaceholder = document.getElementById('camera-off-placeholder');
+        let stream = null; 
+
+        // ----------------------------------------------------
+        // 1. TAB CONTROL FUNCTIONS
+        // ----------------------------------------------------
+
+        function openTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            document.getElementById(tabName).style.display = "flex"; 
+            evt.currentTarget.className += " active";
+            
+            if (tabName !== 'camera') {
+                stopCamera();
+            } else {
+                showCameraOffState();
+            }
+        }
+        
+        function displayFileName(input) {
+            const display = document.getElementById('file-name-display');
+            if (input.files.length > 0) {
+                display.textContent = input.files[0].name;
+            } else {
+                display.textContent = "No file chosen";
+            }
+        }
+
+
+        // ----------------------------------------------------
+        // 2. CAMERA FUNCTIONS (Manual Control)
+        // ----------------------------------------------------
+
+        function startCamera() {
+            if (stream) return; 
+
+            navigator.mediaDevices.getUserMedia({ video: {facingMode: "environment"}, audio: false })
+                .then(function(s) {
+                    stream = s;
+                    video.srcObject = stream;
+                    video.play();
+                    
+                    video.style.display = 'block';
+                    canvas.style.display = 'none';
+                    cameraOffPlaceholder.style.display = 'none';
+
+                    startCameraButton.style.display = 'none';
+                    snapButton.style.display = 'block';
+                    snapButton.disabled = false;
+                    analyzeButton.style.display = 'none';
+                    retakeButton.style.display = 'none';
+                })
+                .catch(function(err) {
+                    console.error("Error accessing camera:", err);
+                    alert("Could not access camera. (Note: Camera access requires localhost or HTTPS.)");
+                    showCameraOffState();
+                });
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            showCameraOffState();
+        }
+        
+        function showCameraOffState() {
+            video.style.display = 'none';
+            canvas.style.display = 'none';
+            cameraOffPlaceholder.style.display = 'flex';
+            
+            startCameraButton.style.display = 'block';
+            snapButton.style.display = 'none';
+            analyzeButton.style.display = 'none';
+            retakeButton.style.display = 'none';
+            snapButton.disabled = true;
+        }
+
+
+        function captureImage() {
+            const context = canvas.getContext('2d');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            stopCamera(); 
+            
+            video.style.display = 'none';
+            canvas.style.display = 'block'; 
+            cameraOffPlaceholder.style.display = 'none';
+
+            startCameraButton.style.display = 'none';
+            snapButton.style.display = 'none'; 
+            analyzeButton.style.display = 'block';
+            retakeButton.style.display = 'block'; 
+        }
+
+        function retakeImage() {
+            startCamera();
+        }
+
+        function submitCameraImage() {
+            // Ensure camera is stopped before submission
+            stopCamera(); 
+
+            analyzeButton.innerHTML = '<span class="material-symbols-outlined">hourglass_top</span> Analyzing...';
+            analyzeButton.disabled = true;
+            retakeButton.disabled = true;
+            
+            canvas.toBlob(function(blob) {
+                
+                if (!blob) {
+                    console.error('Error: Failed to create image blob from canvas.');
+                    alert('Analysis failed: Could not capture image data. Please try again.');
+                    analyzeButton.innerHTML = '<span class="material-symbols-outlined">search</span> Analyze';
+                    analyzeButton.disabled = false;
+                    retakeButton.disabled = false;
+                    return; 
+                }
+                
+                const formData = new FormData();
+                formData.append('file', blob, 'camera_capture.jpg');
+                
+                fetch('/', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        // Log server errors before reloading
+                        console.error('Server responded with an error status:', response.status);
+                        return response.text().then(text => {
+                            console.error('Server error details:', text);
+                            throw new Error(`Server error: ${response.status} ${response.statusText}`);
+                        });
+                    }
+                    window.location.reload(); 
+                })
+                .catch(error => {
+                    console.error('Error submitting camera image:', error);
+                    alert('Analysis failed. Please check the console for details, or try restarting the server.');
+                    
+                    analyzeButton.innerHTML = '<span class="material-symbols-outlined">search</span> Analyze';
+                    analyzeButton.disabled = false;
+                    retakeButton.disabled = false;
+                });
+            }, 'image/jpeg', 0.9);
+        }
+
+
+        // ----------------------------------------------------
+        // 3. CHART & INITIALIZATION
+        // ----------------------------------------------------
+
+        function renderChannelChart(weights) {
+            const ctx = document.getElementById('channelAttentionChart').getContext('2d');
+            const channelLabels = Array.from({length: weights.length}, (_, i) => `Ch ${i+1}`);
+            
+            const channelChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: channelLabels,
+                    datasets: [{
+                        label: 'Channel Importance (Normalized)',
+                        data: weights,
+                        backgroundColor: (context) => {
+                            const value = context.parsed.y;
+                            if (value > 0.8) return 'rgba(255, 64, 129, 0.8)'; 
+                            if (value > 0.5) return 'rgba(0, 188, 212, 0.8)'; 
+                            return 'rgba(68, 68, 68, 0.8)'; 
+                        },
+                        borderColor: 'rgba(255, 255, 255, 0.2)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1.0,
+                            title: { display: true, text: 'Normalized Weight' },
+                            grid: { color: 'rgba(51, 51, 51, 1)' },
+                            ticks: { color: 'var(--color-text-light)' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: 'var(--color-text-light)', maxTicksLimit: 20 }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- Event Listeners and Initial Setup ---
+        snapButton.addEventListener('click', captureImage);
+        analyzeButton.addEventListener('click', submitCameraImage);
+        retakeButton.addEventListener('click', retakeImage);
+        startCameraButton.addEventListener('click', startCamera);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('camera').style.display = "flex"; 
+            showCameraOffState(); 
+
+            {% if result %}
+            
+            if (document.getElementById('video').style.display !== 'none' || stream) {
+                 stopCamera();
+            }
+
+            try {
+                const channelWeights = JSON.parse('{{ result.channel_weights | tojson }}');
+                if (channelWeights && channelWeights.length > 0) {
+                    renderChannelChart(channelWeights);
+                }
+            } catch (e) {
+                console.error("Could not parse channel weights for chart rendering.", e);
+            }
+            
+            {% endif %}
+        });
+    </script>
+</body>
+</html>
