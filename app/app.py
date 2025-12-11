@@ -265,7 +265,6 @@ def index():
     return render_template('index.html', result=None)
 
 if __name__ == '__main__':
-    if model is None:
-        print("\n[FLASK STARTUP SKIPPED] Server cannot run without a loaded model.")
-    else:
+    with app.app_context():
         app.run(debug=True)
+
