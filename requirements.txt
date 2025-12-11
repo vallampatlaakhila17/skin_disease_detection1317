@@ -8,9 +8,10 @@ pandas
 # Used for data splitting (train_test_split) and class weighting (compute_class_weight)
 scikit-learn
 # Deep learning framework, essential for model creation, loading, and prediction
-tensorflow==2.10.0 
+tensorflow==2.10.1 
 # OpenCV is used for image manipulation, Grad-CAM, and RGB visualization in app/app.py
 # 'headless' version is crucial for non-GUI server environments like Render
 opencv-python-headless==4.7.0.72
 # Gunicorn is the required production-ready WSGI server for your Flask application on Render
 gunicorn
+
